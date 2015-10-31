@@ -3,7 +3,6 @@ Exercise django-registration's built-in form classes.
 
 """
 
-from django import get_version
 from django.utils.six import text_type
 
 from .. import forms
@@ -11,14 +10,9 @@ from .base import RegistrationTestCase
 from django.utils.translation import ugettext_lazy as _
 
 
-if get_version()[:3] == "1.8":  # pragma: no cover
-    BAD_USERNAME = _("Enter a valid username. "
-                     "This value may contain only letters, numbers "
-                     "and @/./+/-/_ characters.")
-else:  # pragma: no cover
-    BAD_USERNAME = _("This value may contain only letters, numbers and "
-                     "@/./+/-/_ characters.")
-
+BAD_USERNAME = _("Enter a valid username. "
+                 "This value may contain only letters, numbers "
+                 "and @/./+/-/_ characters.")
 DUPLICATE_USER = _("A user with that username already exists.")
 PASSWORD_MISMATCH = _("The two password fields didn't match.")
 
