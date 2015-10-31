@@ -7,14 +7,6 @@ from django.utils.six import text_type
 
 from .. import forms
 from .base import RegistrationTestCase
-from django.utils.translation import ugettext_lazy as _
-
-
-BAD_USERNAME = _("Enter a valid username. "
-                 "This value may contain only letters, numbers "
-                 "and @/./+/-/_ characters.")
-DUPLICATE_USER = _("A user with that username already exists.")
-PASSWORD_MISMATCH = _("The two password fields didn't match.")
 
 
 class RegistrationFormTests(RegistrationTestCase):
@@ -37,7 +29,7 @@ class RegistrationFormTests(RegistrationTestCase):
             self.assertFalse(form.is_valid())
             self.assertEqual(
                 form.errors['username'],
-                [text_type(BAD_USERNAME)]
+                [text_type(forms.BAD_USERNAME)]
             )
 
     def test_user_uniqueness(self):
@@ -55,7 +47,7 @@ class RegistrationFormTests(RegistrationTestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors['username'],
-            [text_type(DUPLICATE_USER)]
+            [text_type(forms.DUPLICATE_USER)]
         )
 
     def test_password_match(self):
@@ -68,8 +60,8 @@ class RegistrationFormTests(RegistrationTestCase):
         form = forms.RegistrationForm(data=data)
         self.assertFalse(form.is_valid())
         self.assertEqual(
-            form.errors['password2'],
-            [text_type(PASSWORD_MISMATCH)]
+            form.errors['__all__'],
+            [text_type(forms.PASSWORD_MISMATCH)]
         )
 
     def test_tos_field(self):
