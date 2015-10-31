@@ -110,15 +110,13 @@ start guide <quickstart>`.
 
    Important customization points unique to this class are:
 
-   .. method:: create_inactive_user(**user_kwargs)
+   .. method:: create_inactive_user(form)
 
       Creates and returns an inactive user account, and calls
       :meth:`send_activation_email()` to send the email with the
-      activation key. Accepts a dictionary of keyword arguments passed
-      to it from
-      :meth:`~registration.views.RegistrationView.register()`,
-      corresponding to the ``cleaned_data`` of the form used during
-      signup.
+      activation key. The argument ``form`` is a valid registration
+      form instance passed from
+      :meth:`~registration.views.RegistrationView.register()`.
 
    .. method:: get_activation_key(user)
 
@@ -145,10 +143,10 @@ start guide <quickstart>`.
 
       A string specifying the template to use for the subject of the
       activation email. Default is
-      ``"registration/activation_email_subject.txt"``. Note that to
+      ``"registration/activation_email_subject.txt"``. Note that, to
       avoid header-injection vulnerabilities, the result of rendering
-      this template will be forced to a single line of text, stripping
-      newline characters.
+      this template will be forced into a single line of text,
+      stripping newline characters.
 
 .. class:: ActivationView
 

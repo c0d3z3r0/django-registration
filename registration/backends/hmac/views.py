@@ -5,11 +5,9 @@ on signup.
 
 """
 
-from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.sites.models import Site
-from django.contrib.sites.requests import RequestSite
+from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
 from django.template.loader import render_to_string
 
@@ -34,10 +32,8 @@ class RegistrationView(BaseRegistrationView):
     email_body_template = 'registration/activation_email.txt'
     email_subject_template = 'registration/activation_email_subject.txt'
 
-    def register(self, **cleaned_data):
-        new_user = self.create_inactive_user(
-            **self.get_user_kwargs(**cleaned_data)
-        )
+    def register(self, form):
+        new_user = self.create_inactive_user(form)
         signals.user_registered.send(sender=self.__class__,
                                      user=new_user,
                                      request=self.request)
@@ -46,14 +42,13 @@ class RegistrationView(BaseRegistrationView):
     def get_success_url(self, user):
         return ('registration_complete', (), {})
 
-    def create_inactive_user(self, **user_kwargs):
+    def create_inactive_user(self, form):
         """
         Create the inactive user account and send an email containing
         activation instructions.
 
         """
-        User = get_user_model()
-        new_user = User.objects.create_user(**user_kwargs)
+        new_user = form.save(commit=False)
         new_user.is_active = False
         new_user.save()
 
@@ -77,15 +72,10 @@ class RegistrationView(BaseRegistrationView):
         Build the template context used for the activation email.
 
         """
-        if apps.is_installed('django.contrib.sites'):
-            site = Site.objects.get_current()
-        else:
-            site = RequestSite(self.request)
-
         return {
             'activation_key': activation_key,
             'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
-            'site': site,
+            'site': get_current_site(self.request),
         }
 
     def send_activation_email(self, user):

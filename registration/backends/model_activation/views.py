@@ -9,9 +9,7 @@ look into the HMAC activation workflow in registration.backends.hmac.
 
 """
 
-from django.apps import apps
-from django.contrib.sites.models import Site
-from django.contrib.sites.requests import RequestSite
+from django.contrib.sites.shortcuts import get_current_site
 
 from registration import signals
 from registration.models import RegistrationProfile
@@ -25,14 +23,10 @@ class RegistrationView(BaseRegistrationView):
     activation key, and email it to the user.
 
     """
-    def register(self, **cleaned_data):
-        if apps.is_installed('django.contrib.sites'):
-            site = Site.objects.get_current()
-        else:
-            site = RequestSite(self.request)
+    def register(self, form):
         new_user = RegistrationProfile.objects.create_inactive_user(
-            site=site,
-            **self.get_user_kwargs(**cleaned_data)
+            form,
+            site=get_current_site(self.request)
         )
         signals.user_registered.send(sender=self.__class__,
                                      user=new_user,
